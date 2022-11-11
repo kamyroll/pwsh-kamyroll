@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$Version = "1.1.2.4"
+$Version = "1.1.2.5"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -12,7 +12,7 @@ if (!(Get-InstalledModule -Name PSMenu -ErrorAction SilentlyContinue)) {
 }
 
 # Updater
-$gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Adolar0042/pwsh-kamyroll/main/cli.ps1"
+$gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kamyroll/pwsh-kamyroll/main/cli.ps1"
 $newVersion = $gitRaw.Content.Split("`n")[2].Replace('$Version = ', "").Replace('"', "")
 $i = 0
 foreach ($num in $newVersion.Split('.')) {
