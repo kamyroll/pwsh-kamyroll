@@ -24,7 +24,7 @@ foreach ($num in $newVersion.Split('.')) {
             $ans = Read-Host "New version available! Download? [Y/N]"
         } While ($ans -notin @("Y", "y", "N", "n"))
         if ($ans -in @("Y", "y")) {
-            $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Adolar0042/pwsh-kamyroll/main/cli.ps1"
+            $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kamyroll/pwsh-kamyroll/main/cli.ps1"
             $content = $gitRaw.Content.Replace("[CONFIGPATH]", $configPath)
             $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
