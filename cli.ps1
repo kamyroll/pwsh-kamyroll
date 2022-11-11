@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$Version = "1.1.2.6"
+$Version = "1.1.2.7"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -12,7 +12,7 @@ if (!(Get-InstalledModule -Name PSMenu -ErrorAction SilentlyContinue)) {
 }
 
 # Updater
-$gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kamyroll/pwsh-kamyroll/main/cli.ps1"
+$gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
 $newVersion = $gitRaw.Content.Split("`n")[2].Replace('$Version = ', "").Replace('"', "")
 $i = 0
 foreach ($num in $newVersion.Split('.')) {
@@ -24,7 +24,7 @@ foreach ($num in $newVersion.Split('.')) {
             $ans = Read-Host "New version available! Download? [Y/N]"
         } While ($ans -notin @("Y", "y", "N", "n"))
         if ($ans -in @("Y", "y")) {
-            $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kamyroll/pwsh-kamyroll/main/cli.ps1"
+            $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
             $content = $gitRaw.Content.Replace("[CONFIGPATH]", $configPath)
             $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
@@ -182,7 +182,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 if (!(Test-Path -Path "$defaultFolder\kamyrollAPI.ps1")) {
     Write-Host "kamyrollAPI.ps1 not found in $defaultFolder, downloading..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1" -OutFile "$defaultFolder\kamyrollAPI.ps1"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1" -OutFile "$defaultFolder\kamyrollAPI.ps1"
     Do {
         Start-Sleep -Milliseconds 10
     }Until(Test-Path -Path "$defaultFolder\kamyrollAPI.ps1")
