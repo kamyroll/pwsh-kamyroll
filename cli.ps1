@@ -182,7 +182,7 @@ $ProgressPreference = 'SilentlyContinue'
 
 if (!(Test-Path -Path "$defaultFolder\kamyrollAPI.ps1")) {
     Write-Host "kamyrollAPI.ps1 not found in $defaultFolder, downloading..." -ForegroundColor Yellow
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Adolar0042/pwsh-kamyroll/main/kamyrollAPI.ps1" -OutFile "$defaultFolder\kamyrollAPI.ps1"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1" -OutFile "$defaultFolder\kamyrollAPI.ps1"
     Do {
         Start-Sleep -Milliseconds 10
     }Until(Test-Path -Path "$defaultFolder\kamyrollAPI.ps1")
