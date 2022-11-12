@@ -24,6 +24,11 @@ Set-Alias Kamyroll startKamy
 ```
 That way each time you type "Kamyroll" into powershell it will start the cli
 
+## API Implementation
+
+
+All the Kamyroll API interactions are made in the form of functions in [`kamyrollAPI.ps1`](https://github.com/kamyroll/pwsh-kamyroll/blob/main/kamyrollAPI.ps1), if you want to see how the returned values are used to get further information, like title(s) and streams, look into [`cli.ps1`](https://github.com/kamyroll/pwsh-kamyroll/blob/main/cli.ps1) and search the function from [`kamyrollAPI.ps1`](https://github.com/kamyroll/pwsh-kamyroll/blob/main/kamyrollAPI.ps1) that you want further information on
+
 ---
 
 The CLI was made with menus from [PSMenu](https://github.com/Sebazzz/PSMenu)
