@@ -407,12 +407,12 @@ elseif ($result.media_type -eq "movie_listing") {
         $subtitle = Get-SoftSubs $streams
         if ($subtitle.count -eq 0 -and $subtitle.url -ne "") {
             $request = Invoke-WebRequest -Uri $subtitle.url
-            $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.items.title)\[$($subtitle.locale)] $(Normalize $media.items.title).ass"
+            $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.items.title)\[$($subtitle.locale)] $(Normalize $media.items.title).$subtitleFormat"
         }
         elseif ($subtitle.count -ne 0) {
             foreach ($sub in $subtitle) {
                 $request = Invoke-WebRequest -Uri $sub.url
-                $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.items.title)\[$($sub.locale)] $(Normalize $media.items.title).ass"
+                $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.items.title)\[$($sub.locale)] $(Normalize $media.items.title).$subtitleFormat"
             }
         }
     }
@@ -452,12 +452,12 @@ if ($Null -ne $episodeID) {
         $subtitle = Get-SoftSubs $streams
         if ($subtitle.count -eq 1 -and $subtitle.url -ne "") {
             $request = Invoke-WebRequest -Uri $subtitle.url 
-            $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $epMedia.season_title)\$($epMedia.sequence_number)\[$($subtitle.locale)] $(Normalize $epMedia.title).ass"
+            $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $epMedia.season_title)\$($epMedia.sequence_number)\[$($subtitle.locale)] $(Normalize $epMedia.title).$subtitleFormat"
         }
         elseif ($subtitle.count -gt 1 -and $subtitle.url -ne "") {
             foreach ($sub in $subtitle) {
                 $request = Invoke-WebRequest -Uri $sub.url 
-                $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $epMedia.season_title)\$($epMedia.sequence_number)\[$($sub.locale)] $(Normalize $epMedia.title).ass"
+                $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $epMedia.season_title)\$($epMedia.sequence_number)\[$($sub.locale)] $(Normalize $epMedia.title).$subtitleFormat"
             }
         }
     }
@@ -488,12 +488,12 @@ else {
             $subtitle = Get-SoftSubs $streams
             if ($subtitle.count -eq 1 -and $subtitle.url -ne "") {
                 $request = Invoke-WebRequest -Uri $subtitle.url 
-                $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.title)\$($episode.sequence_number)\[$($subtitle.locale)] $(Normalize $episode.title).ass"
+                $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.title)\$($episode.sequence_number)\[$($subtitle.locale)] $(Normalize $episode.title).$subtitleFormat"
             }
             elseif ($subtitle.count -gt 1 -and $subtitle.url -ne "") {
                 foreach ($sub in $subtitle) {
                     $request = Invoke-WebRequest -Uri $sub.url 
-                    $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.title)\$($episode.sequence_number)\[$($sub.locale)] $(Normalize $episode.title).ass"
+                    $request.content | Out-File -LiteralPath "$defaultFolder\anime\$(Normalize $media.title)\$($episode.sequence_number)\[$($sub.locale)] $(Normalize $episode.title).$subtitleFormat"
                 }
             }
         }
