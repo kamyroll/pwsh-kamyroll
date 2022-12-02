@@ -33,4 +33,4 @@ All the Kamyroll API interactions are made in the form of functions in [`kamyrol
 
 ---
 
-The CLI was made with menus from [PSMenu](https://github.com/Sebazzz/PSMenu)
+The CLI was made with menus from the [PSMenu module](https://github.com/Sebazzz/PSMenu)
