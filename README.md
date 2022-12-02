@@ -15,7 +15,7 @@ A implementation of the Kamyroll API in powershell
 1. Download `cli.ps1`
 2. Run `cli.ps1` from anywhere you want.
 
-3. (Optional) Create `C:\Users\<yourName>\.config\powershell\user_profile.ps1` and set it's contents to
+3. (Optional) Create `C:\Users\<yourName>\Documents\PowerShell\Microsoft.Powershell_profile.ps1` and set it's contents to
 ```Powershell
 Function startKamy {
 . "<path to cli.ps1>"
@@ -23,6 +23,8 @@ Function startKamy {
 Set-Alias Kamyroll startKamy
 ```
 That way each time you type "Kamyroll" into powershell it will start the cli
+
+_Should that not work, try running `$PROFILE` in your powershell window, to get the path of its profile script._
 
 ## API Implementation
 
