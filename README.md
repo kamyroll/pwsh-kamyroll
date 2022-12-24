@@ -1,13 +1,13 @@
-> **Warning**
+> **Info**
 > 
 > This is more or less deprecated, should still work, but I recommend using [Kamyroll Tauri](https://github.com/kamyroll/Kamyroll-Tauri) instead as it features an entire gui experience.
 
 # pwsh-kamyroll
-A implementation of the Kamyroll API in powershell
+A implementation of the Kamyroll API in Powershell
 
 > **Warning**
 > 
-> This was put together in about 15 hours, so might be buggy at some points.
+> This was put together in about 15 hours and tested on Windows 11 with Powershell 7.3.1
 > 
 > I provide no warranty or gurantee of any kind.
 
