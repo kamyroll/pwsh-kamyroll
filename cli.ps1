@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$Version = "1.1.2.9"
+$Version = "1.1.2.10"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -161,7 +161,7 @@ Function Get-M3U8Resolutions([STRING]$m3u8Url) {
 }
 
 Function Normalize([STRING]$string) {
-    return $string.Replace("/", " ").Replace(":", " ").Replace("*", " ").Replace("?", " ").Replace("<", " ").Replace(">", " ").Replace("|", " ").Replace("""", " ")
+    return $string.Replace("/", " ").Replace(":", " ").Replace("*", " ").Replace("<", " ").Replace(">", " ").Replace("|", " ").Replace("""", " ")
 }
 
 Function Get-Episode($media) {
@@ -221,11 +221,9 @@ Function Get-ResolutionUrl($streamRes) {
         Write-Host "Choose resolution`r`n" -ForegroundColor Green
         [System.Console]::SetCursorPosition(0, $lastTop)
     }
-    Invoke-WebRequest -Uri $stream.url -UseBasicParsing -OutFile "$env:TEMP\m3u8.txt" | Out-Null
-    $m3u8 = Get-Content -Path "$env:TEMP\m3u8.txt"
-    Remove-Item "$env:TEMP\m3u8.txt" | Out-Null 
+    $m3u8 = [System.Text.Encoding]::UTF8.GetString((Invoke-WebRequest -Uri $stream.url -UseBasicParsing).Content).Split("`n")
     $next = $false
-    foreach ($line in $m3u8.Split("`r`n")) {
+    foreach ($line in $m3u8) {
         if ($next -eq $true) {
             $url = $line
             $next = $false
