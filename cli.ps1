@@ -145,13 +145,16 @@ if (!(Test-Path -Path "$defaultFolder\kamyrollAPI.ps1")) {
 Function Get-M3U8Resolutions([STRING]$m3u8Url) {
     $i = 0
     $resolutions = @()
-    Invoke-WebRequest -Uri $m3u8Url -UseBasicParsing -OutFile "$env:TEMP\m3u8.txt"
-    $m3u8 = Get-Content -Path "$env:TEMP\m3u8.txt"
-    Remove-Item "$env:TEMP\m3u8.txt"
-    foreach ($line in $m3u8.Split("`r`n")) {
+    $m3u8 = [System.Text.Encoding]::UTF8.GetString((Invoke-WebRequest -Uri $m3u8Url -UseBasicParsing).Content).Split("`n")
+    foreach ($line in $m3u8) {
         $i++
         if ($i -gt 1 -and $line[0] -eq "#") {
-            $resolutions += $line.Split(",")[2].Split("=")[1]
+            $line = $line.Split(",")
+            $res = $line | Where-Object { $_ -match "RESOLUTION" }
+            if ($res) {
+                $res = $res.Split("=")[1]
+                $resolutions += $res
+            }
         }
     }
     return $resolutions
