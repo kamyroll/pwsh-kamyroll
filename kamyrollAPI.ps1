@@ -94,13 +94,8 @@ Function Media([STRING]$mediaID, [STRING]$channel = "crunchyroll", [STRING]$loca
     return $res
 }
 
-Function Platforms($Path) {
-    $token = Get-ApiToken -Path $Path
-    $tokenType = Get-Content -Path "$Path\token\token_type"
-    $res = Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/platforms" -Headers @{
-        "authorization" = "$tokenType $token"
-    }
-    return $res
+Function Platforms {
+    return Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/platforms"
 }
 
 Function Streams([STRING]$mediaID, [STRING]$channel = "crunchyroll", [STRING]$format, [STRING]$type, $Path) {

@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$Version = "1.1.2.8"
+$Version = "1.1.2.9"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -96,57 +96,8 @@ channel = [CHANNEL]
     }
     $config = $config.Replace("[SUBTITLEFORMAT]", $ans)
 
-    # Temp API functions
-    $tempPath = "$env:TEMP"
     $apiUrl = "https://api.kamyroll.tech"
-    $deviceID = "com.service.data"
-    $deviceType = "powershellapi"
-    $accessToken = "HMbQeThWmZq4t7w"
-
-    Function Get-ApiToken ($Path) {
-        #   Token
-        # access_token
-        # token_type
-        # expires_in
-        Function New-Token {
-            $newToken = Invoke-RestMethod -Method Post -Uri "$apiUrl/auth/v1/token" -Body @{
-                "device_id"    = $deviceID
-                "device_type"  = $deviceType
-                "access_token" = $accessToken
-            }
-            New-Item -Path "$Path\token" -Name "access_token" -Value $newToken.access_token -Force
-            New-Item -Path "$Path\token" -Name "token_type" -Value $newToken.token_type -Force
-            New-Item -Path "$Path\token" -Name "expires_in" -Value $newToken.expires_in -Force
-            New-Item -Path "$Path\token" -Name "created_at" -Value $unixTimeStamp -Force
-            return $newToken
-        }
-        $date = Get-Date
-        $unixTimeStamp = ([DateTimeOffset]$date).ToUnixTimeSeconds()
-        if (Test-Path -Path "$Path\token") {
-            $expiresIn = Get-Content -Path "$Path\token\expires_in"
-            if ($unixTimeStamp -ge $expiresIn) {
-                $token = (New-Token).access_token
-            }
-            else {
-                $token = Get-Content -Path "$Path\token\access_token"
-            }
-        }
-        else {
-            $token = (New-Token).access_token
-        }
-        return $token
-    }
-    Function Platforms($Path) {
-        $token = Get-ApiToken -Path $Path
-        $tokenType = Get-Content -Path "$Path\token\token_type"
-        $res = Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/platforms" -Headers @{
-            "authorization" = "$tokenType $token"
-        }
-        Remove-Item -Path "$Path\token" -Force -Recurse -ErrorAction SilentlyContinue
-        return $res
-    }
-    
-    $platforms = Platforms $tempPath
+    $platforms = Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/platforms"
     Clear-Host
     Write-Host "On which channel do you want to use Kamyroll?`r`n" -ForegroundColor Green
     $ans = Show-Menu -MenuItems @(
