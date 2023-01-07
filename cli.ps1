@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.0"
+$version = "1.1.3.1"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -280,10 +280,7 @@ else {
     $searchResult = Search -query $query -limit 5 -channel $channel -Path $defaultFolder
     [INT]$totalResults = 0
     foreach ($type in $searchResult.items) {
-        foreach ($entry in $type.items) {
-            $i++
-        }
-        $totalResults = $i
+        $totalResults += $type.total
     }
     Remove-Variable -Name i
     if ($totalResults -eq 0) {
@@ -304,7 +301,7 @@ else {
             $Args.title.Substring(0, ($Host.UI.RawUI.WindowSize.Width / 3 * 2 - 9)) + "..."
         }
         else {
-            $name = "$($Args.title) $(if($Args.media_type -eq "movie_listing"){"[Movie]"}elseif($Args.media_type -eq "series"){"[Series]"})"
+            $name = "$(if($Args.media_type -eq "movie_listing"){"[Movie] "}elseif($Args.media_type -eq "series"){"[Series]"}) $($Args.title) "
             $name = $name + " " * (($Host.UI.RawUI.WindowSize.Width / 3 * 2 - 6) - $name.Length)
             $name
         }
