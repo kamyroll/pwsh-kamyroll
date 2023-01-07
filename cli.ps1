@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.4.1"
+$version = "1.1.3.5"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -19,16 +19,22 @@ $newVersion = $gitRaw.Content.Split("`n")[2].Split('"')[1]
 $versionArray = $version.Split(".") | ForEach-Object { [Int32]$_ }
 $newVersionArray = $newVersion.Split(".") | ForEach-Object { [Int32]$_ }
 # Compare the version codes
+    # Calculate the difference in length between the arrays
+$diff = $newVersionArray.Count - $versionArray.Count
+    # Pad $versionArray with 0s until it has the same length as $newVersionArray
+for ($i = 0; $i -lt $diff; $i++) {
+    $versionArray += 0
+}
 Function Remove-EmptyLines {
     param(
         [Parameter(ValueFromPipeline=$true)]
         [string]$InputString
     )
-    $lines = $InputString -split "`r`n"
+    $lines = $InputString -split "`n"
     while ($lines[-1] -eq ''){
         $lines = $lines[0..($lines.Length - 2)]
     }
-    return ($lines -join "`r`n")
+    return ($lines -join "`n")
 }
 for ($i = 0; $i -lt $versionArray.Count; $i++) {
     if ($newVersionArray[$i] -gt $versionArray[$i]) {
@@ -119,15 +125,15 @@ channel = [CHANNEL]
         }
         # Rebuild script with new config path
         $thisScript = Get-Content "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
-        foreach ($line in $thisScript.Split("`r`n")) {
+        foreach ($line in $thisScript.Split("`n")) {
             if ($line.Contains('$configPath = "[CONFIGPATH]"') -and !($line.Contains("if ("))) {
-                $content += '$configPath = ' + """$Path""`r`n"
+                $content += '$configPath = ' + """$Path""`n"
             }
             elseif ($line -eq "# End") {
                 $content += $line
             }
-            elseif ($line -ne "`r`n") {
-                $content += $line + "`r`n"
+            else {
+                $content += $line + "`n"
             }
         }
         $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8 -Force        
@@ -161,15 +167,15 @@ channel = [CHANNEL]
 
         # Rebuild script with new config path
         $thisScript = Get-Content "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
-        foreach ($line in $thisScript.Split("`r`n")) {
+        foreach ($line in $thisScript.Split("`n")) {
             if ($line.Contains('$configPath = "[CONFIGPATH]"') -and !($line.Contains("if ("))) {
-                $content += '$configPath = ' + """$Path""`r`n"
+                $content += '$configPath = ' + """$Path""`n"
             }
             elseif ($line -eq "# End") {
                 $content += $line
             }
-            elseif ($line -ne "`r`n") {
-                $content += $line + "`r`n"
+            else {
+                $content += $line + "`n"
             }
         }
         $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8 -Force
