@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.3"
+$version = "1.1.3.4"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -33,12 +33,17 @@ for ($i = 0; $i -lt $versionArray.Count; $i++) {
             $apiContent = $apiGitRaw.Content
             $apiContent | Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
+            . "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
+            $updatedRun = $true
             break
         }
     }
     else {
         Write-Host "No updates available" -ForegroundColor Green
     }
+}
+if($updatedRun) {
+    break
 }
 
 # Load config.config
@@ -90,49 +95,88 @@ channel = [CHANNEL]
         }
     }
     Until(Test-Path -Path $Path)
-    Clear-Host
-    $config = $config.Replace("[DEFAULTFOLDER]", $Path)
-    Write-Host "What format should soft subtitles be in?`r`n" -ForegroundColor Green
-    $ans = Show-Menu -MenuItems @(
-        "ASS - Formatting, position and style are pre-set (recommended)"
-        "VTT - Position and style are pre-set, but formatting is not (allows for more customization)"
-        "SRT - No formatting, position or style is pre-set"
-    ) -ReturnIndex
-    $ans = switch ($ans) {
-        0 { "ass" }
-        1 { "vtt" }
-        2 { "srt" }
+    # check if path contains old config
+    if (Test-Path -Path "$Path\config.config") {
+        $config = Get-Content -Path "$Path\config.config" -Encoding UTF8
+        foreach ($line in $config) {
+            # if the line starts with #, skip it
+            if (!$line.StartsWith("#") -and $line.Contains("=")) {
+                $name = $line.split(" = ")[0]
+                $value = $line.split(" = ")[1]
+                Set-Variable -Name $name -Value $value
+            }
+        }
+        # Rebuild script with new config path
+        $thisScript = Get-Content "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
+        foreach ($line in $thisScript.Split("`r`n")) {
+            if ($line.Contains('$configPath = "[CONFIGPATH]"') -and !($line.Contains("if ("))) {
+                $content += '$configPath = ' + """$Path""`r`n"
+            }
+            elseif ($line -eq "# End") {
+                $content += $line
+            }
+            elseif ($line -ne "`r`n") {
+                $content += $line + "`r`n"
+            }
+        }
+        $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8 -Force        
+        Write-Host "Config loaded" -ForegroundColor Green
     }
-    $config = $config.Replace("[SUBTITLEFORMAT]", $ans)
+    else {
+        Clear-Host
+        $config = $config.Replace("[DEFAULTFOLDER]", $Path)
+        Write-Host "What format should soft subtitles be in?`r`n" -ForegroundColor Green
+        $ans = Show-Menu -MenuItems @(
+            "ASS - Formatting, position and style are pre-set (recommended)"
+            "VTT - Position and style are pre-set, but formatting is not (allows for more customization)"
+            "SRT - No formatting, position or style is pre-set"
+        ) -ReturnIndex
+        $ans = switch ($ans) {
+            0 { "ass" }
+            1 { "vtt" }
+            2 { "srt" }
+        }
+        $config = $config.Replace("[SUBTITLEFORMAT]", $ans)
 
-    $apiUrl = "https://api.kamyroll.tech"
-    $platforms = Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/platforms"
-    Clear-Host
-    Write-Host "On which channel do you want to use Kamyroll?`r`n" -ForegroundColor Green
-    $ans = Show-Menu -MenuItems @(
-        $platforms.items
-    )
-    $config = $config.Replace("[CHANNEL]", $ans)
-    $config | Out-File -FilePath "$Path\config.config" -Encoding utf8 -Force
+        $apiUrl = "https://api.kamyroll.tech"
+        $platforms = Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/platforms"
+        Clear-Host
+        Write-Host "On which channel do you want to use Kamyroll?`r`n" -ForegroundColor Green
+        $ans = Show-Menu -MenuItems @(
+            $platforms.items
+        )
+        $config = $config.Replace("[CHANNEL]", $ans)
+        $config | Out-File -FilePath "$Path\config.config" -Encoding utf8 -Force
 
-    # Rebuild script with new config path
-    $thisScript = Get-Content "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
-    foreach ($line in $thisScript.Split("`r`n")) {
-        if ($line.Contains('$configPath = "[CONFIGPATH]"') -and !($line.Contains("if ("))) {
-            $content += '$configPath = ' + """$Path""`r`n"
+        # Rebuild script with new config path
+        $thisScript = Get-Content "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
+        foreach ($line in $thisScript.Split("`r`n")) {
+            if ($line.Contains('$configPath = "[CONFIGPATH]"') -and !($line.Contains("if ("))) {
+                $content += '$configPath = ' + """$Path""`r`n"
+            }
+            elseif ($line -eq "# End") {
+                $content += $line
+            }
+            elseif ($line -ne "`r`n") {
+                $content += $line + "`r`n"
+            }
         }
-        elseif ($line -eq "# End") {
-            $content += $line
+        $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8 -Force
+
+        Write-Host "Config file created, these settings can be changed at any time by editing`r`n   $Path\config.config`r`nComntinuing in 5s ..." -ForegroundColor Green
+        Start-Sleep -Seconds 5
+        Write-Host "Loading config ..." -ForegroundColor Green
+        $config = Get-Content -Path "$configPath\config.config" -Encoding UTF8
+        foreach ($line in $config) {
+            # if the line starts with #, skip it
+            if (!$line.StartsWith("#") -and $line.Contains("=")) {
+                $name = $line.split(" = ")[0]
+                $value = $line.split(" = ")[1]
+                Set-Variable -Name $name -Value $value
+            }
         }
-        else {
-            $content += $line + "`r`n"
-        }
+        Write-Host "Config loaded" -ForegroundColor Green
     }
-    $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8 -Force
-
-    Write-Host "Config file created, these settings can be changed at any time by editing`r`n   $Path\config.config`r`nThe CLI needs to restart, press any key to continue ..." -ForegroundColor Green
-    Read-Host | Out-Null
-    break
 }
 
 
@@ -141,7 +185,7 @@ channel = [CHANNEL]
 $ProgressPreference = 'SilentlyContinue'
 
 if (!(Test-Path -Path "$defaultFolder\kamyrollAPI.ps1")) {
-    Write-Host "kamyrollAPI.ps1 not found in $defaultFolder, downloading..." -ForegroundColor Yellow
+    Write-Host "kamyrollAPI.ps1 not found in '$defaultFolder', downloading..." -ForegroundColor Yellow
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1" -OutFile "$defaultFolder\kamyrollAPI.ps1"
     Do {
         Start-Sleep -Milliseconds 10
@@ -271,6 +315,7 @@ Function Get-SoftSubs($streams) {
 }
 
 Clear-Host
+Write-Host "Kamyroll CLI v$version" -ForegroundColor Green
 $query = Read-Host "Search"
 if ($query.Split("/")[3] -eq "series") {
     Write-Host "Crunchyroll series link detected"
