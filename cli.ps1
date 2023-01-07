@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.6"
+$version = "1.1.3.7"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -37,11 +37,18 @@ for ($i = 0; $i -lt $versionArray.Count; $i++) {
         } While ($ans -notin @("Y", "y", "N", "n"))
         if ($ans -in @("Y", "y")) {
             $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
-            $content = $gitRaw.Content.Replace("[CONFIGPATH]", $configPath)
-            Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -InputObject $content -Encoding UTF8
+            $gitContent = $gitRaw.Content.Split("`n") #.Replace("[CONFIGPATH]", $configPath)
+            foreach ($line in $gitContent){
+                if ($line.Contains("[CONFIGPATH]") -and !$line.Contains("if (")) {
+                    $gitContentReplace += $line.Replace("[CONFIGPATH]", $configPath)
+                }
+                else {
+                    $gitContentReplace += $line
+                }
+            }
+            Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -InputObject $gitContentReplace -Encoding UTF8
             $apiGitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1"
-            $apiContent = $apiGitRaw.Content
-            Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -InputObject $apiContent -Encoding UTF8
+            Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -InputObject $apiGitRaw.Content -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
             break
         }
