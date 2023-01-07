@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$Version = "1.1.2.10"
+$Version = "1.1.2.11"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -27,6 +27,9 @@ foreach ($num in $newVersion.Split('.')) {
             $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
             $content = $gitRaw.Content.Replace("[CONFIGPATH]", $configPath)
             $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8
+            $apiGitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1"
+            $apiContent = $apiGitRaw.Content
+            $apiContent | Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
             break
         }
