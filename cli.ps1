@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.5"
+$version = "1.1.3.6"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -20,21 +20,14 @@ $versionArray = $version.Split(".") | ForEach-Object { [Int32]$_ }
 $newVersionArray = $newVersion.Split(".") | ForEach-Object { [Int32]$_ }
 # Compare the version codes
     # Calculate the difference in length between the arrays
-$diff = $newVersionArray.Count - $versionArray.Count
-    # Pad $versionArray with 0s until it has the same length as $newVersionArray
-for ($i = 0; $i -lt $diff; $i++) {
+$diffNewCurr = $newVersionArray.Count - $versionArray.Count
+$diffCurrNew = $versionArray.Count - $newVersionArray.Count
+    # Pad arrays with 0s until it has the same length as the other array
+for ($i = 0; $i -lt $diffNewCurr; $i++) {
     $versionArray += 0
 }
-Function Remove-EmptyLines {
-    param(
-        [Parameter(ValueFromPipeline=$true)]
-        [string]$InputString
-    )
-    $lines = $InputString -split "`n"
-    while ($lines[-1] -eq ''){
-        $lines = $lines[0..($lines.Length - 2)]
-    }
-    return ($lines -join "`n")
+for ($i = 0; $i -lt $diffCurrNew; $i++) {
+    $newVersionArray += 0
 }
 for ($i = 0; $i -lt $versionArray.Count; $i++) {
     if ($newVersionArray[$i] -gt $versionArray[$i]) {
@@ -45,22 +38,17 @@ for ($i = 0; $i -lt $versionArray.Count; $i++) {
         if ($ans -in @("Y", "y")) {
             $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
             $content = $gitRaw.Content.Replace("[CONFIGPATH]", $configPath)
-            $content | Remove-EmptyLines | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8
+            Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -InputObject $content -Encoding UTF8
             $apiGitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1"
             $apiContent = $apiGitRaw.Content
-            $apiContent | Remove-EmptyLines | Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -Encoding UTF8
+            Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -InputObject $apiContent -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
-            . "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
-            $updatedRun = $true
             break
         }
     }
 }
 else {
     Write-Host "No updates available" -ForegroundColor Green
-}
-if($updatedRun) {
-    break
 }
 
 # Load config.config
