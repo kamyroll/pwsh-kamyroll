@@ -16,10 +16,10 @@ $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pws
 $newVersion = $gitRaw.Content.Split("`n")[2].Split('"')[1]
 # Split the version codes into arrays of integers
 $versionArray = $version.Split(".") | ForEach-Object { [Int32]$_ }
-$newVersion = $newVersion.Split(".") | ForEach-Object { [Int32]$_ }
+$newVersionArray = $newVersion.Split(".") | ForEach-Object { [Int32]$_ }
 # Compare the version codes
 for ($i = 0; $i -lt $versionArray.Count; $i++) {
-    if ($newVersion[$i] -gt $versionArray[$i]) {
+    if ($newVersionArray[$i] -gt $versionArray[$i]) {
         Do {
             Write-Host "Old: v$Version New: v$newVersion" -ForegroundColor Yellow
             $ans = Read-Host "New version available! Download? [Y/N]"
