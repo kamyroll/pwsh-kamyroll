@@ -1,8 +1,13 @@
 # Kamyroll API PWSH Script
 # Author: Adolar0042
 $apiUrl = "https://api.kamyroll.tech"
-# $deviceID is a random uuid and needs to be generated only once and stored in a file
-$deviceID = [System.Guid]::NewGuid().ToString()
+# $deviceID is a random uuid that gets generated and stored in a file once, then it is used for all subsequent requests
+if(Test-Path -Path "$($MyInvocation.PSScriptRoot)\kamyrollDeviceID.json") {
+    $deviceID = Get-Content -Path "$($MyInvocation.PSScriptRoot)\kamyrollDeviceID.json" | ConvertFrom-Json
+}
+else {
+    $deviceID = [System.Guid]::NewGuid().ToString() | ConvertTo-Json | Out-File -FilePath "$($MyInvocation.PSScriptRoot)\kamyrollDeviceID.json" -Force
+}
 $deviceType = "powershellapi" # This can give more token valid time
 $accessToken = "HMbQeThWmZq4t7w"
 
