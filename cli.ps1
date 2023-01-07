@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.2"
+$version = "1.1.3.3"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -11,6 +11,7 @@ if (!(Get-InstalledModule -Name PSMenu -ErrorAction SilentlyContinue)) {
     Install-Module PSMenu -ErrorAction Stop
 }
 
+Write-Host "Looking for updates ..." -ForegroundColor Yellow
 # Updater
 $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
 $newVersion = $gitRaw.Content.Split("`n")[2].Split('"')[1]
@@ -35,9 +36,13 @@ for ($i = 0; $i -lt $versionArray.Count; $i++) {
             break
         }
     }
+    else {
+        Write-Host "No updates available" -ForegroundColor Green
+    }
 }
 
 # Load config.config
+Write-Host "Loading config ..." -ForegroundColor Green
 $config = Get-Content -Path "$configPath\config.config" -Encoding UTF8
 if ($Null -ne $config) {
     foreach ($line in $config) {
@@ -316,7 +321,12 @@ if (($result.media_type -eq "series") -or ($NULL -ne $seriesID)) {
     $seasons = Seasons -seriesID $id -channel $channel -Path $defaultFolder
     if ($Null -eq $seasons.items) {
         Write-Host "No seasons found" -ForegroundColor Red
-        break
+        if ($seriesID) {
+            Write-Host "Looking for movie instead ..." -ForegroundColor Yellow
+        }
+        else {
+            break
+        }
     }
     Clear-Host
 
@@ -340,7 +350,7 @@ if (($result.media_type -eq "series") -or ($NULL -ne $seriesID)) {
     $media = $season
     Clear-Host
 }
-elseif ($result.media_type -eq "movie_listing") {
+elseif (($result.media_type -eq "movie_listing") -or ($NULL -ne $seriesID)) {
     $media = Movies -moviesID $result.id -channel $channel -Path $defaultFolder
 
     Clear-Host
@@ -375,7 +385,7 @@ elseif ($result.media_type -eq "movie_listing") {
     break
 }
 elseif ($NULL -eq $episodeID -and !($result.media_type -in @("series", "movie_listing"))) {
-    Write-Host "Media type not supported. $($result.media_type)`r`nFurther information about search result: $($result)" -ForegroundColor Red
+    Write-Host "Media type '$($result.media_type)' not supported.`r`nFurther information about search result:`r`n`r`n$($result | ConvertTo-Json)" -ForegroundColor Red
     break
 }
 else {
