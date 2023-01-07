@@ -1,6 +1,6 @@
 # Kamyroll API PWSH CLI
 # Author: Adolar0042
-$version = "1.1.3.4"
+$version = "1.1.3.4.1"
 $configPath = "[CONFIGPATH]"
 
 $oldTitle = $Host.UI.RawUI.WindowTitle
@@ -19,6 +19,17 @@ $newVersion = $gitRaw.Content.Split("`n")[2].Split('"')[1]
 $versionArray = $version.Split(".") | ForEach-Object { [Int32]$_ }
 $newVersionArray = $newVersion.Split(".") | ForEach-Object { [Int32]$_ }
 # Compare the version codes
+Function Remove-EmptyLines {
+    param(
+        [Parameter(ValueFromPipeline=$true)]
+        [string]$InputString
+    )
+    $lines = $InputString -split "`r`n"
+    while ($lines[-1] -eq ''){
+        $lines = $lines[0..($lines.Length - 2)]
+    }
+    return ($lines -join "`r`n")
+}
 for ($i = 0; $i -lt $versionArray.Count; $i++) {
     if ($newVersionArray[$i] -gt $versionArray[$i]) {
         Do {
@@ -28,19 +39,19 @@ for ($i = 0; $i -lt $versionArray.Count; $i++) {
         if ($ans -in @("Y", "y")) {
             $gitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/cli.ps1"
             $content = $gitRaw.Content.Replace("[CONFIGPATH]", $configPath)
-            $content | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8
+            $content | Remove-EmptyLines | Out-File -FilePath "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)" -Encoding UTF8
             $apiGitRaw = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Kamyroll/pwsh-kamyroll/main/kamyrollAPI.ps1"
             $apiContent = $apiGitRaw.Content
-            $apiContent | Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -Encoding UTF8
+            $apiContent | Remove-EmptyLines | Out-File -FilePath "$($PSScriptRoot)\kamyrollAPI.ps1" -Encoding UTF8
             Write-Host "Updated to version $newVersion" -ForegroundColor Green
             . "$($PSScriptRoot)\$($MyInvocation.MyCommand.Name)"
             $updatedRun = $true
             break
         }
     }
-    else {
-        Write-Host "No updates available" -ForegroundColor Green
-    }
+}
+else {
+    Write-Host "No updates available" -ForegroundColor Green
 }
 if($updatedRun) {
     break
