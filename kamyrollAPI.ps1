@@ -24,7 +24,7 @@ Function Get-ApiToken {
     # expires_in
     Function New-Token {
         try {
-            $newToken = Invoke-RestMethod -Method Post -Uri "$apiUrl/auth/v1/token" -Body @{
+            $newToken = Invoke-RestMethod -Method Get -Uri "$apiUrl/auth/v1/token" -Body @{
                 "device_id"    = $deviceID
                 "device_type"  = $deviceType
                 "access_token" = $accessToken
